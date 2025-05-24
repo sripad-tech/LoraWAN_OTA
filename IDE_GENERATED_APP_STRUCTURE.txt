@@ -1,0 +1,28 @@
+STM32CPVLogger/
+├── Core/
+│   ├── Inc/
+│   │   ├── main.h
+│   │   ├── stm32wlxx_hal_conf.h
+│   │   └── stm32wlxx_it.h
+│   ├── Src/
+│   │   ├── main.c
+│   │   ├── stm32wlxx_hal_msp.c
+│   │   └── stm32wlxx_it.c
+│   └── Startup/
+│       └── startup_stm32wl55jciux.s  (or similar, specific to the MCU variant)
+├── Drivers/
+│   ├── CMSIS/
+│   │   ├── Device/ST/STM32WLxx/Include/
+│   │   │   └── stm32wlxx.h (and others)
+│   │   └── Include/
+│   │       └── cmsis_core.h (and others)
+│   └── STM32WLxx_HAL_Driver/
+│       ├── Inc/ (all HAL header files like stm32wlxx_hal_gpio.h, stm32wlxx_hal_rcc.h etc.)
+│       └── Src/ (all HAL source files like stm32wlxx_hal_gpio.c, stm32wlxx_hal_rcc.c etc.)
+├── Middlewares/
+│   └── Third_Party/ (initially might be empty or contain FreeRTOS if selected)
+├── SUBGHZ_Phy/ (If LoRa/SubGHz radio is initialized by CubeMX)
+│   ├── Inc/
+│   └── Src/
+├── STM32CPVLogger.ioc  (The actual configuration file, represented by STM32CPVLogger.ioc.txt)
+└── (Other IDE specific files like .project, .cproject)

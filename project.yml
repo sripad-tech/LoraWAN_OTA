@@ -1,0 +1,71 @@
+# Ceedling Project Configuration File
+
+:project:
+  :use_exceptions: FALSE
+  :use_test_preprocessor: TRUE
+  :use_auxiliary_dependencies: TRUE
+  :build_root: build/test # Where test builds are stored
+  :test_file_prefix: test_ # All test files start with this
+
+:environment: []
+
+:extension:
+  :executable: .out # Extension for test executables
+
+:paths:
+  :test:
+    - +:tests/unit/**        # Path to unit test files
+  :source:
+    - Core/Src/**
+    - src/app_utils/**
+    - drivers/components/stsafe_a110/** # Path to STSAFE mockable driver
+    # Add other source paths if they become necessary for unit tests
+    # For example, if other custom drivers are added under src/ or drivers/
+  :include:
+    - Core/Inc/
+    - src/app_utils/
+    - drivers/components/stsafe_a110/
+    - Drivers/STM32WLxx_HAL_Driver/Inc/ # HAL includes
+    - Drivers/CMSIS/Device/ST/STM32WLxx/Include/ # CMSIS device includes
+    - Drivers/CMSIS/Include/ # CMSIS core includes
+  :libraries: []
+
+:defines:
+  # Define symbols that might be necessary for compilation during testing
+  # For example, if your code uses STM32WL55xx, you might need:
+  :test:
+    - STM32WL55xx # Or specific MCU define like STM32WL55JCIx
+    - USE_HAL_DRIVER
+  :release:
+    - STM32WL55xx
+    - USE_HAL_DRIVER
+
+:cmock:
+  :mock_prefix: mock_ # Prefix for generated mock files
+  :when_no_prototypes: :warn # Warn if trying to mock a function without a prototype
+  :enforce_strict_ordering: TRUE
+  :plugins:
+    - :ignore
+    - :callback
+    - :return_thru_ptr
+  :treat_as:
+    uint8_t*: HEX8
+    uint16_t*: HEX16
+    uint32_t*: UINT32
+  # Add other CMock configurations as needed
+
+:tools:
+  :test_compiler: gcc
+  :test_linker: gcc
+  :test_fixture: gcc
+  # Add paths to your ARM GCC compiler if not in system path for more complex tests
+  # :test_compiler: arm-none-eabi-gcc
+  # :test_linker: arm-none-eabi-gcc
+  # :test_fixture: arm-none-eabi-gcc
+
+:plugins:
+  :load_paths:
+    - vendor/ceedling/plugins
+  :enabled:
+    - stdout_pretty_tests_report
+    - module_generator

@@ -1,0 +1,58 @@
+/
+├── src/
+│   ├── main.c
+│   ├── stm32wlxx_it.c         // Interrupt handlers
+│   ├── app_core/              // Core application logic
+│   │   ├── inc/
+│   │   └── src/
+│   ├── app_lorawan/           // LoRaWAN application specifics
+│   │   ├── inc/
+│   │   └── src/
+│   ├── app_ota/               // OTA update application logic
+│   │   ├── inc/
+│   │   └── src/
+│   └── app_security/          // Security and LESC logic
+│       ├── inc/
+│       └── src/
+├── drivers/
+│   ├── bsp/                   // Board Support Package
+│   │   ├── inc/
+│   │   └── src/
+│   ├── cmsis/                 // CMSIS core and device files (usually from ST or ARM)
+│   │   ├── Device/
+│   │   └── Include/
+│   ├── stm32wlxx_hal_driver/  // STM32WL HAL drivers (from STM32CubeWL)
+│   │   ├── Inc/
+│   │   └── Src/
+│   └── components/            // Drivers for external components (sensors, STSAFE)
+│       ├── stsafe_a110/
+│       │   ├── inc/
+│       │   └── src/
+│       └── sensors/           // Placeholder for various sensor drivers
+│           ├── template_sensor/ // Example for a specific sensor
+│           │   ├── inc/
+│           │   └── src/
+├── middlewares/
+│   └── st/
+│       └── stm32_lorawan/     // LoRaWAN middleware (e.g., I-CUBE-LRWAN or SubGHz_Phy)
+│           ├── App/
+│           ├── LoRaWAN/
+│           └── Utilities/
+│       └── stm32_secure_engine/ // If using ST's Secure Engine for some operations
+├── bootloader/                // Secure Boot and Firmware Update (SBFU) - may be separate project
+│   ├── src/
+│   └── include/
+├── docs/
+│   ├── architecture.md
+│   └── hardware_selection.md
+├── tests/
+│   ├── unit/                  // Unit tests for individual modules
+│   └── integration/           // Integration tests for module interactions
+├── tools/                     // Helper scripts (e.g., for building, flashing, generating keys)
+├── linker_scripts/            // Linker scripts for different memory layouts (e.g., for bootloader + app)
+├── Makefile                   // Example: Top-level Makefile for command-line builds
+├── STM32CubeIDE_Project/      // Placeholder for STM32CubeIDE project files
+│   ├── .cproject
+│   ├── .project
+│   └── STM32WLE5xx_FLASH.ld   // Example linker script for STM32CubeIDE
+└── README.md

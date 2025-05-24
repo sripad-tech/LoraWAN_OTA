@@ -1,0 +1,43 @@
+# STM32CubeMX Configuration Data for STM32CPVLogger (NUCLEO-WL55JC1)
+
+# MCU: STM32WL55JCIx (assuming the one on NUCLEO-WL55JC1)
+
+# System Core > SYS
+#   Debug: Serial Wire Debug (SWD)
+
+# System Core > RCC (Reset and Clock Control)
+#   HSE (High Speed External Clock): Enabled, Crystal/Ceramic Resonator
+#   LSE (Low Speed External Clock): Enabled, Crystal/Ceramic Resonator
+#   HSI (High Speed Internal Clock): Enabled
+#   MSI (Multispeed Internal Clock): Enabled
+#   Clock Configuration:
+#     System Clock Mux: PLLCLK
+#     PLL Source Mux: HSE (e.g., 32 MHz)
+#     SYSCLK (MHz): 48 MHz (Max for STM32WL)
+#     AHB Prescaler: /1
+#     APB1 Prescaler: /1
+#     APB2 Prescaler: /1
+#     APB3 Prescaler: /1 (For SubGHz radio)
+#     (Other clocks configured as needed by peripherals)
+
+# Peripherals > GPIO
+#   PB15: GPIO_Output (Blue LED on NUCLEO-WL55JC1, often labeled LED2 or USER_LED1)
+#   (Other GPIOs like PB9 for LED1, PC1 for LED3 might also be configured if desired for more blinking)
+
+# Peripherals > I2C1 (Example for STSAFE communication)
+#   Mode: I2C
+#   Configuration:
+#     Standard Mode (100kHz) or Fast Mode (400kHz)
+#     Addressing Mode: 7-bit
+#     SDA Pin: (e.g., PA10, check NUCLEO-WL55JC1 schematic for available I2C pins accessible on Arduino headers or STMod+)
+#     SCL Pin: (e.g., PA9)
+#     (NVIC, DMA settings if used - initially disabled)
+
+# Middleware (Conceptual - enabled via STM32CubeMX interface)
+#   SUBGHZ: LoRaWAN radio peripheral enabled and configured (basic parameters)
+#     (Specific LoRaWAN stack integration will be manual or via I-CUBE-LRWAN pack)
+
+# Project Manager > Project
+#   Project Name: STM32CPVLogger
+#   Toolchain/IDE: STM32CubeIDE
+#   Firmware Pack Version: Latest STM32CubeWL FW pack.
