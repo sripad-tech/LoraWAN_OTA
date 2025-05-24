@@ -33,9 +33,34 @@ The firmware development will prioritize these features:
     *   **ECDH Shared Secret Computation:** Using the device's ephemeral private key (held in STSAFE) and the (simulated) Join Server's public key, an ECDH shared secret is computed by the STSAFE (`stsafe_a110_core.c` called by `lesc_app.c`). The result is logged.
     *   **LoRaWAN Root Key Derivation (Placeholder):** A function (`lesc_app_derive_lorawan_keys`) exists as a placeholder to show where `AppKey` and `NwkKey` would be derived from the shared secret. Currently, it populates dummy keys and logs them. The actual cryptographic derivation is not yet implemented.
     *   The goal is to eventually use these derived keys for the actual LoRaWAN join.
-*   **Over-The-Air (OTA) Updates (`src/app_ota/` and Bootloader):**
-    *   Application-side: Receive update notification, download new firmware (simplified mechanism), set flag for bootloader.
-    *   Bootloader-side (future development): Verify and apply the update. Minimal and robust.
+*   **Over-The-Air (OTA) Updates (`src/app_ota/`, `bootloader/`, and `Core/Inc/ota_app_flags.h`):**
+        *   **Goal:** Basic mechanism to update the main application firmware. Current implementation simulates Flash operations.
+        *   **Flash Layout & Metadata (Conceptual - defined in `ota_app_flags.h`):**
+            *   Bootloader Area (e.g., `0x08000000`, 32KB)
+            *   Main Application Area (e.g., `0x08008000`, 96KB)
+            *   Firmware Staging Area (e.g., `0x08020000`, 96KB) for downloaded firmware.
+            *   `ota_firmware_metadata_t` (size, checksums, version) stored at the start of the staging area.
+        *   **Application-Side (`src/app_ota/ota_app.c`):**
+            *   `ota_app_simulate_download_and_stage_firmware()`:
+                *   Uses a hardcoded dummy firmware image for simulation.
+                *   Calculates metadata (size, version, checksum of image, checksum of metadata).
+                *   **Simulates (via logging)** erasing the staging area, writing metadata, and writing the dummy firmware image to their defined Flash locations. No actual Flash hardware operations are performed.
+            *   `main.c` calls this simulation. If successful, it calls `Trigger_OTA_Update()`.
+            *   `Trigger_OTA_Update()` (in `main.c`): Writes `OTA_UPDATE_MAGIC_VALUE` to `OTA_UPDATE_MAGIC_ADDRESS` in RAM and triggers a system reset.
+        *   **Bootloader-Side (`bootloader/src/main_bl.c`):**
+            *   **Entry Point & Init:** `main_bl()` performs basic platform initialization (simplified, uses `HAL_Init()` for now).
+            *   **OTA Flag Check:** On startup, checks `OTA_UPDATE_MAGIC_ADDRESS` in RAM.
+            *   If OTA flag is set:
+                *   Clears the flag in RAM.
+                *   Calls `perform_ota_update()`.
+                    *   **Simulates (via logging)** reading `ota_firmware_metadata_t` from the staging area.
+                    *   **Simulates (via logging)** verifying the firmware image in staging against the metadata (checksums).
+                    *   **Simulates (via logging)** copying the firmware from staging to the main application Flash area if verification passes.
+                *   If simulated update is successful, `NVIC_SystemReset()` is called to boot the "new" application.
+                *   If simulated update fails, it attempts to boot the existing application.
+            *   **Application Boot:** If no OTA flag, or if OTA fails and fallback is chosen:
+                *   `is_valid_application()`: Performs a basic heuristic check on the main application's vector table (MSP in RAM, Reset Handler in Flash & Thumb). This is a placeholder for robust checksum/signature verification.
+                *   `jump_to_application()`: De-initializes bootloader peripherals (simplified), sets the application's stack pointer, and jumps to its reset handler.
 *   **CPV Data Logging (Future - `src/app_core/`):**
     *   Interface with sensors (Voltage, Current, Temperature, Irradiance).
     *   Package and transmit data over LoRaWAN. This will be added after core LoRaWAN/OTA/LESC are functional.

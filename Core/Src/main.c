@@ -24,8 +24,9 @@
 #include "stsafe_a110_core.h"
 #include "lorawan_app.h"
 #include "lesc_app.h"
-#include "lora_app_conf.h" // For APP_LOG and LESC_APP_PORT
+#include "lora_app_conf.h"
 #include "ota_app_flags.h"
+#include "ota_app.h" // Add this line
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,6 +94,7 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  // (Keep STSAFE and LESC initialization and checks as they are)
   if (stsafe_init(&hi2c1) == STSAFE_OK) {
     APP_LOG(("MAIN: STSAFE Initialized successfully.\n"));
     for(int i=0; i<10; ++i) { HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin); HAL_Delay(100); }
@@ -148,29 +150,44 @@ int main(void)
     while(1) { HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin); HAL_Delay(50); }
   }
 
-  APP_LOG(("MAIN: Entering main processing loop.\n"));
+  APP_LOG(("MAIN: Entering main processing loop (LoRaWAN already initialized if LESC path was successful).\n"));
+  // If LESC path failed before LoRaWAN_App_Init(), LoRaWAN is not initialized.
+  // However, the error loops in LESC prevent reaching here in those cases.
   /* USER CODE END 2 */
 
   /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   uint32_t main_loop_counter = 0;
+  // bool ota_triggered_this_session = false; // Example flag to prevent re-trigger
+
   while (1)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-    LoRaWAN_App_Process();
+    LoRaWAN_App_Process(); // Process LoRaWAN stack
 
     main_loop_counter++;
 
-    if (main_loop_counter > 500000 && (main_loop_counter % 10000 ==0) ) { // Reduced frequency of check after initial period
-        APP_LOG(("MAIN: OTA trigger check (loop counter = %lu).\n", main_loop_counter));
-        // This condition needs to be more realistic, e.g. based on a flag set in OnRxData
-        // For now, keeping it as a long-running counter for simulation.
-        // Trigger_OTA_Update(); // OTA trigger temporarily disabled for LESC flow focus
+    // Simulate OTA trigger condition
+    // Re-enabled for this step as per the plan.
+    if (main_loop_counter > 20000 && main_loop_counter < 20050) { // Trigger once in this window
+        APP_LOG(("MAIN: OTA trigger condition met (loop counter = %lu).\n", main_loop_counter));
+        if (ota_app_simulate_download_and_stage_firmware() == 0) {
+            APP_LOG(("MAIN: Firmware staging simulation successful. Triggering OTA update.\n"));
+            Trigger_OTA_Update(); // This function already exists from a previous step
+                                  // It sets the RAM flag and resets the device.
+        } else {
+            APP_LOG(("MAIN: Firmware staging simulation FAILED. OTA update aborted.\n"));
+            // Handle staging failure (e.g., log and continue normal operation or specific error blink)
+            // For now, just log and continue normal operation.
+        }
     }
     
-    if (main_loop_counter % 2000 == 0) { // Slowed down heartbeat
-         HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin); 
+    // Heartbeat LED (from previous step)
+    if (main_loop_counter % 1000 == 0) { // Toggle every 1000 main loop iterations
+         HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
     }
+
     /* USER CODE END 3 */
   }
 }
